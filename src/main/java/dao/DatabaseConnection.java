@@ -6,7 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Handles the SQLite connection and creates the tables on first run.
+ * Opens SQLite connections. Foreign key enforcement is switched on
+ * every time a connection is created.
  */
 public class DatabaseConnection {
 
@@ -15,26 +16,10 @@ public class DatabaseConnection {
     private DatabaseConnection() { }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL);
-    }
-
-    /** Creates the users table if it does not exist yet. */
-    public static void initialize() {
-        String sql = """
-                CREATE TABLE IF NOT EXISTS users (
-                    user_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username  TEXT NOT NULL UNIQUE,
-                    password  TEXT NOT NULL,
-                    full_name TEXT NOT NULL,
-                    role      TEXT NOT NULL CHECK (role IN ('DISTRIBUTOR', 'STAFF', 'RESELLER')),
-                    status    TEXT NOT NULL DEFAULT 'PENDING'
-                )
-                """;
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            System.out.println("Database setup failed: " + e.getMessage());
+        Connection conn = DriverManager.getConnection(URL);
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("PRAGMA foreign_keys = ON;");
         }
+        return conn;
     }
 }
