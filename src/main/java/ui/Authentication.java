@@ -111,7 +111,7 @@ public class Authentication {
     /** Sends the logged-in user to the menu that matches their role. */
     private void routeByRole(User user) {
         switch (user.role()) {
-            case User.ROLE_DISTRIBUTOR -> new DistributorMenu(scanner, userDao, user).show();
+            case User.ROLE_DISTRIBUTOR -> new AdminMenu(scanner, userDao, user).show();
             case User.ROLE_STAFF       -> new StaffMenu(scanner, userDao, user).show();
             case User.ROLE_RESELLER    -> new ResellerMenu(scanner, userDao, user).show();
             default -> System.out.println("Unknown role: " + user.role());

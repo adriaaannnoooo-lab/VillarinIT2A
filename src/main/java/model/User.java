@@ -12,4 +12,5 @@ public record User(int userId, String username, String password,
     public static final String ROLE_RESELLER = "RESELLER";
 
     public static final String STATUS_PENDING = "PENDING";
+    public static final String STATUS_APPROVED = "APPROVED";
 }
