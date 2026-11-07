@@ -96,9 +96,30 @@ public class Authentication {
         }
 
         User user = result.get();
+
+        // Block accounts that an admin has not approved yet.
+        if (!User.STATUS_APPROVED.equals(user.status())) {
+            showPendingScreen(user);
+            return;
+        }
+
         ctx.logDao().logAction(user.userId(), "LOGIN", user.username() + " logged in");
         routeByRole(user);
         ctx.logDao().logAction(user.userId(), "LOGOUT", user.username() + " logged out");
+    }
+
+    /** Shown when a user logs in before an admin has approved their account. */
+    private void showPendingScreen(User user) {
+        System.out.println();
+        System.out.println("=======================================");
+        System.out.println("   ACCOUNT PENDING APPROVAL");
+        System.out.println("=======================================");
+        System.out.println("Hi, " + user.fullName() + "!");
+        System.out.println("Your " + user.role() + " account has not been approved yet.");
+        System.out.println("Please wait for an admin (distributor) to approve it,");
+        System.out.println("then log in again.");
+        System.out.println("=======================================");
+        ctx.input().readLine("Press Enter to go back... ");
     }
 
     /** Sends the logged-in user to the menu that matches their role. */
